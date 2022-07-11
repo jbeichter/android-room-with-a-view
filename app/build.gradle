@@ -73,6 +73,7 @@ dependencies {
     // UI
     implementation "androidx.compose.material:material:$composeVersion"
     implementation "androidx.compose.ui:ui:$composeVersion"
+    implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
     implementation "androidx.activity:activity-compose:$activityVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
     implementation "com.google.android.material:material:$rootProject.materialVersion"

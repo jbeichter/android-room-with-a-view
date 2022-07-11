@@ -20,13 +20,19 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 
 class MainActivity : AppCompatActivity() {
 
@@ -52,24 +58,46 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
-        val adapter = WordListAdapter()
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        val fab = findViewById<FloatingActionButton>(R.id.fab)
-        fab.setOnClickListener {
-            promptNewWord.launch(Intent(this, NewWordActivity::class.java))
+        setContent {
+            val context = LocalContext.current
+            val allWords by wordViewModel.allWords.observeAsState()
+            Scaffold(
+//                topBar = {
+//                    TopAppBar(
+//                        title = {
+//                            Text("RoomWordsSample")
+//                        }
+//                    )
+//                },
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = {
+                            promptNewWord.launch(Intent(context, NewWordActivity::class.java))
+                        },
+                        content = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_add_black_24dp),
+                                contentDescription = null
+                            )
+                        }
+                    )
+                },
+                content = {
+                    if (allWords != null) {
+                        WordsList(allWords!!)
+                    }
+                }
+            )
         }
-        
-        // Add an observer on the LiveData returned by getAlphabetizedWords.
-        // The onChanged() method fires when the observed data changes and the activity is
-        // in the foreground.
-        wordViewModel.allWords.observe(this) { words ->
-            // Update the cached copy of the words in the adapter.
-            words.let { adapter.submitList(it) }
+    }
+
+}
+
+@Composable
+fun WordsList(words: List<Word>) {
+    LazyColumn {
+        items(words) { word ->
+            Text(text = word.word)
         }
     }
 }
