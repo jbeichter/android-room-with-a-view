@@ -62,13 +62,13 @@ class MainActivity : ComponentActivity() {
             val context = LocalContext.current
             val allWords by wordViewModel.allWords.observeAsState()
             Scaffold(
-//                topBar = {
-//                    TopAppBar(
-//                        title = {
-//                            Text("RoomWordsSample")
-//                        }
-//                    )
-//                },
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text("RoomWordsSample")
+                        }
+                    )
+                },
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
