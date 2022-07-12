@@ -50,7 +50,6 @@ repositories {
 }
 
 dependencies {
-    implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
     implementation "androidx.activity:activity-ktx:$rootProject.activityVersion"
 
     // Dependencies for working with Architecture components
@@ -75,7 +74,6 @@ dependencies {
     implementation "androidx.compose.ui:ui:$composeVersion"
     implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
     implementation "androidx.activity:activity-compose:$activityVersion"
-    implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
     implementation "com.google.android.material:material:$rootProject.materialVersion"
 
     // Testing
