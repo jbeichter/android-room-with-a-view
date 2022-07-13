@@ -21,18 +21,29 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 class MainActivity : ComponentActivity() {
 
@@ -40,7 +51,20 @@ class MainActivity : ComponentActivity() {
         WordViewModelFactory((application as WordsApplication).repository)
     }
 
-    val promptNewWord = registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            HomeScreen(wordViewModel)
+        }
+    }
+
+}
+
+@Composable
+fun HomeScreen(wordViewModel: WordViewModel) {
+    val allWords by wordViewModel.allWords.observeAsState()
+    val context = LocalContext.current
+    val promptNewWord = rememberLauncherForActivityResult(StartActivityForResult()) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             val intent = result.data
             intent?.getStringExtra(NewWordActivity.EXTRA_REPLY)?.let { reply ->
@@ -49,55 +73,55 @@ class MainActivity : ComponentActivity() {
             }
         } else {
             Toast.makeText(
-                applicationContext,
+                context,
                 R.string.empty_not_saved,
                 Toast.LENGTH_LONG
             ).show()
         }
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            val context = LocalContext.current
-            val allWords by wordViewModel.allWords.observeAsState()
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text("RoomWordsSample")
-                        }
-                    )
-                },
-                floatingActionButton = {
-                    FloatingActionButton(
-                        onClick = {
-                            promptNewWord.launch(Intent(context, NewWordActivity::class.java))
-                        },
-                        content = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_add_black_24dp),
-                                contentDescription = null
-                            )
-                        }
-                    )
+    MyScaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    promptNewWord.launch(Intent(context, NewWordActivity::class.java))
                 },
                 content = {
-                    if (allWords != null) {
-                        WordsList(allWords!!)
-                    }
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_add_black_24dp),
+                        contentDescription = null
+                    )
                 }
             )
         }
+    ) {
+        if (allWords != null) {
+            WordsList(allWords!!)
+        }
     }
-
 }
 
 @Composable
 fun WordsList(words: List<Word>) {
     LazyColumn {
         items(words) { word ->
-            Text(text = word.word)
+            WordItem(word.word)
         }
+    }
+}
+
+@Composable
+fun WordItem(word: String) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp)
+    ) {
+        Text(
+            text = word,
+            fontSize = 22.sp,
+            modifier = Modifier
+                .background(Color(0xFFFFBB33))
+                .padding(start = 8.dp)
+        )
     }
 }

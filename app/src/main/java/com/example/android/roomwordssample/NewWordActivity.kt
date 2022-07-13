@@ -21,13 +21,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 /**
  * Activity for entering a word.
@@ -38,12 +44,8 @@ class NewWordActivity : ComponentActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var word by rememberSaveable { mutableStateOf("") }
-            Column {
-                TextField(value = word, onValueChange = {
-                    word = it
-                })
-                Button(onClick = {
+            NewWordScreen(
+                onClickSave = { word ->
                     val replyIntent = Intent()
                     if (word.isEmpty()) {
                         setResult(RESULT_CANCELED, replyIntent)
@@ -52,14 +54,38 @@ class NewWordActivity : ComponentActivity() {
                         setResult(RESULT_OK, replyIntent)
                     }
                     finish()
-                }) {
-                    Text("Save")
                 }
-            }
+            )
         }
     }
 
     companion object {
         const val EXTRA_REPLY = "com.example.android.wordlistsql.REPLY"
+    }
+}
+
+@Composable
+fun NewWordScreen(
+    onClickSave: (String) -> Unit
+) {
+    var word by rememberSaveable { mutableStateOf("") }
+    MyScaffold {
+        Column {
+            TextField(
+                value = word,
+                onValueChange = { word = it },
+                label = { Text("Word…") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = { onClickSave(word) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "SAVE"
+                )
+            }
+        }
     }
 }
