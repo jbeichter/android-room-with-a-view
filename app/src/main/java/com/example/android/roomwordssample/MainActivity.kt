@@ -54,14 +54,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HomeScreen(wordViewModel)
+            WordsScreen(wordViewModel)
         }
     }
 
 }
 
 @Composable
-fun HomeScreen(wordViewModel: WordViewModel) {
+fun WordsScreen(wordViewModel: WordViewModel) {
     val allWords by wordViewModel.allWords.observeAsState()
     val context = LocalContext.current
     val promptNewWord = rememberLauncherForActivityResult(StartActivityForResult()) { result: ActivityResult ->
